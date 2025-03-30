@@ -1,0 +1,141 @@
+.sleep-tracker {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 15px;
+    text-align: center;
+  }
+  
+  .sleep-controls {
+    margin-bottom: 2rem;
+  }
+  
+  .start-sleep-btn, 
+  .end-sleep-btn {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .start-sleep-btn {
+    background-color: #2ecc71;
+    color: white;
+  }
+  
+  .start-sleep-btn:hover {
+    background-color: #27ae60;
+  }
+  
+  .end-sleep-btn {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .end-sleep-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  .current-sleep {
+    background-color: #f1c40f;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+  }
+  
+  .sleep-history {
+    background-color: #ecf0f1;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+  }
+  
+  .sleep-history ul {
+    list-style-type: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .sleep-history li {
+    background-color: #fff;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .reset-button {
+    background-color: #34495e;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .reset-button:hover {
+    background-color: #2c3e50;
+  }
+
+  h3{
+    color: #2c3e50;
+  }
+
+  /* Адаптивность */
+@media (max-width: 768px) {
+  .sleep-tracker {
+      padding: 1rem 10px;
+  }
+
+  .sleep-controls {
+      margin-bottom: 1rem;
+  }
+
+  .start-sleep-btn, 
+  .end-sleep-btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+  }
+
+  .current-sleep {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+  }
+
+  .sleep-history {
+      padding: 1rem;
+  }
+
+  .sleep-history li {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+  }
+
+  .reset-button {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h3 {
+      font-size: 1.2rem;
+  }
+
+  .start-sleep-btn, 
+  .end-sleep-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+  }
+
+  .current-sleep {
+      font-size: 0.8rem;
+  }
+
+  .sleep-history li {
+      font-size: 0.8rem;
+  }
+}

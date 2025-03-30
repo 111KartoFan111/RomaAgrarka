@@ -1,0 +1,167 @@
+.progress-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 15px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.weight-tracker, 
+.body-measurements {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.weight-inputs, 
+.measurement-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Добавленные стили */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+/* Стили для инпутов */
+.weight-inputs input, 
+.measurement-inputs input {
+  padding: 0.5rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  width: 30%;
+}
+
+/* Стили кнопки */
+.weight-inputs button {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.weight-inputs button:hover {
+  background-color: #2980b9;
+}
+
+/* Стили для истории */
+.weight-history, 
+.health-metrics {
+  background-color: #ecf0f1;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+/* Исправленный стиль для списка истории */
+.weight-history ul {
+  list-style-type: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.weight-history li {
+  background-color: #fff;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 5px;
+  text-align: left;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+/* Разделение данных внутри истории */
+.weight-history li span {
+  display: block;
+  font-weight: bold;
+  color: #34495e;
+}
+
+/* Кнопка сброса */
+.reset-button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-button:hover {
+  background-color: #c0392b;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .progress-page {
+      padding: 1rem 10px;
+  }
+
+  .weight-tracker, 
+  .body-measurements {
+      padding: 1rem;
+  }
+
+  .weight-inputs, 
+  .measurement-inputs {
+      flex-direction: column; /* Инпуты в столбец */
+      gap: 0.5rem;
+  }
+
+  .weight-inputs input, 
+  .measurement-inputs input {
+      width: auto; /* Инпуты на всю ширину */
+  }
+
+  .weight-inputs button {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+  }
+
+  .weight-history, 
+  .health-metrics {
+      padding: 0.75rem;
+  }
+
+  .weight-history li {
+      font-size: 0.9rem;
+  }
+
+  .reset-button {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .weight-inputs input, 
+  .measurement-inputs input {
+      padding: 0.4rem;
+      font-size: 0.9rem;
+  }
+
+  .weight-inputs button {
+      font-size: 0.8rem;
+  }
+
+  .weight-history li {
+      font-size: 0.8rem;
+  }
+}

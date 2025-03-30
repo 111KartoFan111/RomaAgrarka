@@ -1,0 +1,155 @@
+.water-tracker {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 15px;
+    text-align: center;
+  }
+  
+  .water-goal {
+    background-color: #ecf0f1;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 30px;
+    background-color: #bdc3c7;
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 1rem 0;
+    position: relative;
+}
+
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db 0%, #66b0ff 100%);
+    transition: width 0.5s ease;
+    position: relative;
+    animation: fill 1s ease-in-out;
+}
+  
+  .water-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .water-buttons button {
+    padding: 0.75rem 1.5rem;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .water-buttons button:hover {
+    background-color: #27ae60;
+  }
+  
+  .water-history {
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+  }
+  
+  .water-history ul {
+    list-style-type: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    color: #2c3e50;
+  }
+  
+  .water-history li {
+    background-color: #e8f4f8;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 5px;
+  }
+  
+  .reset-button {
+    background-color: #e74c3c;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .reset-button:hover {
+    background-color: #c0392b;
+  }
+
+  h2{
+    color: #2c3e50;
+  }
+
+  li{
+    color: #2c3e50;
+  }
+
+  p{
+    color: #2c3e50;
+  }
+
+  @media (max-width: 768px) {
+    .water-tracker {
+        padding: 1rem 10px;
+    }
+
+    .water-goal {
+        padding: 1rem;
+    }
+
+    .progress-bar {
+        height: 20px; /* Уменьшаем высоту прогресс-бара */
+    }
+
+    .water-buttons {
+        flex-direction: column; /* Кнопки в столбец */
+        gap: 0.5rem;
+    }
+
+    .water-buttons button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .water-history {
+        padding: 1rem;
+    }
+
+    .water-history li {
+        font-size: 0.9rem;
+    }
+
+    .reset-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+    }
+
+    .water-buttons button {
+        font-size: 0.8rem;
+    }
+
+    .water-history li {
+        font-size: 0.8rem;
+    }
+}
