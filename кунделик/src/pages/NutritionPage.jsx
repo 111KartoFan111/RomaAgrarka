@@ -1,51 +1,100 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import '../styles/NutritionPage.css'
+import { getAuthHeader } from '../api/auth'
+
+const API_URL = 'http://127.0.0.1:5000/api'
 
 function NutritionPage() {
-  const [meals, setMeals] = useState([
-    { id: 1, name: 'Таңғы ас', calories: 0, time: '' },
-    { id: 2, name: 'Түскі ас', calories: 0, time: '' },
-    { id: 3, name: 'Кешкі ас', calories: 0, time: '' }
-  ])
-
+  const [meals, setMeals] = useState([])
   const [totalCalories, setTotalCalories] = useState(0)
   const [dailyGoal, setDailyGoal] = useState(2000)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const savedMeals = JSON.parse(localStorage.getItem('nutritionMeals'))
-    const savedGoal = localStorage.getItem('dailyCalorieGoal')
-
-    if (savedMeals) setMeals(savedMeals)
-    if (savedGoal) setDailyGoal(Number(savedGoal))
+    fetchNutritionData()
   }, [])
 
+  // Calculate total calories whenever meals update
   useEffect(() => {
-    localStorage.setItem('nutritionMeals', JSON.stringify(meals))
-    localStorage.setItem('dailyCalorieGoal', dailyGoal)
-
     const total = meals.reduce((sum, meal) => sum + meal.calories, 0)
     setTotalCalories(total)
-  }, [meals, dailyGoal])
+  }, [meals])
 
-  const updateMeal = (id, field, value) => {
+  const fetchNutritionData = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get(`${API_URL}/nutrition`, getAuthHeader())
+      setMeals(response.data.meals)
+      setDailyGoal(response.data.daily_goal)
+    } catch (error) {
+      console.error('Failed to fetch nutrition data:', error)
+      setError('Деректерді жүктеу мүмкін болмады')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateMeal = async (id, field, value) => {
     const updatedMeals = meals.map(meal => 
       meal.id === id ? { ...meal, [field]: value } : meal
     )
     setMeals(updatedMeals)
+    
+    try {
+      // If updating time, we need to format it for the API
+      let time = null
+      if (field === 'time' && value) {
+        // Create a date object with today's date and the time value
+        const today = new Date()
+        const [hours, minutes] = value.split(':')
+        today.setHours(hours)
+        today.setMinutes(minutes)
+        time = today.toISOString()
+      }
+      
+      await axios.post(
+        `${API_URL}/nutrition/update`, 
+        { 
+          meal_id: id, 
+          [field]: field === 'time' ? time : value 
+        }, 
+        getAuthHeader()
+      )
+    } catch (error) {
+      console.error('Failed to update meal:', error)
+      setError('Тамақты жаңарту мүмкін болмады')
+      // Revert to original data if API call fails
+      fetchNutritionData()
+    }
   }
 
-  const resetNutrition = () => {
-    const resetMeals = meals.map(meal => ({ ...meal, calories: 0, time: '' }))
-    setMeals(resetMeals)
+  const resetNutrition = async () => {
+    try {
+      await axios.post(`${API_URL}/nutrition/reset`, {}, getAuthHeader())
+      // Reset UI state
+      const resetMeals = meals.map(meal => ({ ...meal, calories: 0, time: '' }))
+      setMeals(resetMeals)
+    } catch (error) {
+      console.error('Failed to reset nutrition data:', error)
+      setError('Деректерді қалпына келтіру мүмкін болмады')
+    }
   }
 
   const getCalorieProgressPercentage = () => {
     return Math.min((totalCalories / dailyGoal) * 100, 100)
   }
 
+  if (loading) {
+    return <div className="loading">Жүктелуде...</div>
+  }
+
   return (
     <div className="nutrition-page">
       <h1>Тамақтану Күнделігі</h1>
+
+      {error && <div className="error-message">{error}</div>}
 
       <div className="calorie-goal">
         <h2>Күндізгі калория мақсаты: {dailyGoal} калория</h2>
@@ -71,7 +120,7 @@ function NutritionPage() {
               />
               <input 
                 type="time" 
-                value={meal.time}
+                value={meal.time ? new Date(meal.time).toTimeString().slice(0, 5) : ''}
                 onChange={(e) => updateMeal(meal.id, 'time', e.target.value)}
               />
             </div>

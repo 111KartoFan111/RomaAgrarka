@@ -23,7 +23,7 @@ function SleepTrackerPage() {
     if (sleepStart) {
       const end = new Date()
       const duration = calculateSleepDuration(sleepStart, end)
-      
+
       const newEntry = {
         start: sleepStart,
         end: end,
