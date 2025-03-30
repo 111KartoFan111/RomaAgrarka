@@ -9,21 +9,17 @@ import os
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=['http://localhost:5173'])  # Укажите домен фронтенда
 
-# Конфигурация
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///health_app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'your-very-secret-jwt-key')  # Обязательно измените в продакшене
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=7)
 
-# Инициализация расширений
 jwt = JWTManager(app)
 db.init_app(app)
 
-# Создание таблиц базы данных
 with app.app_context():
     db.create_all()
 
-# Вспомогательная функция для инициализации записей пользователя
 def initialize_user_records(user_id):
     water_intake = WaterIntake(user_id=user_id, daily_goal=2000)
     sleep_record = SleepRecord(user_id=user_id)
@@ -31,7 +27,7 @@ def initialize_user_records(user_id):
     progress_record = ProgressRecord(user_id=user_id)
 
     db.session.add_all([water_intake, sleep_record, nutrition_record, progress_record])
-    db.session.flush()  # Assign IDs to the records
+    db.session.flush()
 
     meals = [
         Meal(name='Таңғы ас', calories=0, nutrition_record_id=nutrition_record.id),
@@ -42,7 +38,6 @@ def initialize_user_records(user_id):
     db.session.add_all(meals)
     db.session.commit()
 
-# Аутентификация
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -62,7 +57,7 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
-    initialize_user_records(new_user.id)  # Убеждаемся, что функция вызывается
+    initialize_user_records(new_user.id)
 
     access_token = create_access_token(identity=str(new_user.id))
     return jsonify({
@@ -80,7 +75,6 @@ def login():
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'message': 'Invalid credentials'}), 401
 
-    # Преобразуем user.id в строку
     access_token = create_access_token(identity=str(user.id))
     return jsonify({
         'message': 'Login successful',
@@ -90,7 +84,7 @@ def login():
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
-    return jsonify({'message': 'Logout successful'}), 200  # JWT не требует серверного логаута, это делается на клиенте
+    return jsonify({'message': 'Logout successful'}), 200
 
 @app.route('/api/user', methods=['GET'])
 @jwt_required()
@@ -101,7 +95,6 @@ def get_user():
         'user': {'id': user.id, 'username': user.username, 'email': user.email}
     }), 200
 
-# Water Tracker
 @app.route('/api/water', methods=['GET'])
 @jwt_required()
 def get_water_intake():
@@ -125,7 +118,6 @@ def add_water():
     water_intake = WaterIntake.query.filter_by(user_id=user_id).first()
 
     if not water_intake:
-        # Создаем запись, если она отсутствует
         water_intake = WaterIntake(user_id=user_id, daily_goal=2000)
         db.session.add(water_intake)
         db.session.commit()
@@ -159,7 +151,6 @@ def reset_water():
     db.session.commit()
     return jsonify({'message': 'Water intake reset successfully'}), 200
 
-# Sleep Tracker
 @app.route('/api/sleep', methods=['GET'])
 @jwt_required()
 def get_sleep_records():
@@ -188,7 +179,6 @@ def start_sleep():
     sleep_record = SleepRecord.query.filter_by(user_id=user_id).first()
 
     if not sleep_record:
-        # Создаем запись, если она отсутствует
         sleep_record = SleepRecord(user_id=user_id)
         db.session.add(sleep_record)
         db.session.commit()
@@ -241,7 +231,6 @@ def reset_sleep():
     db.session.commit()
     return jsonify({'message': 'Sleep history cleared successfully'}), 200
 
-# Nutrition Tracker
 @app.route('/api/nutrition', methods=['GET'])
 @jwt_required()
 def get_nutrition():
@@ -260,7 +249,7 @@ def get_nutrition():
 @app.route('/api/nutrition/update', methods=['POST'])
 @jwt_required()
 def update_meal():
-    user_id = int(get_jwt_identity())  # Convert string to integer
+    user_id = int(get_jwt_identity())
     data = request.get_json()
     meal = Meal.query.get(data['meal_id'])
 
@@ -314,7 +303,6 @@ def reset_nutrition():
     db.session.commit()
     return jsonify({'message': 'Nutrition data reset successfully'}), 200
 
-# Progress Tracker
 @app.route('/api/progress', methods=['GET'])
 @jwt_required()
 def get_progress():
