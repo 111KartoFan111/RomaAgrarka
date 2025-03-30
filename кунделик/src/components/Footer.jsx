@@ -8,7 +8,7 @@ function Footer() {
     <>
       <footer className="footer">
         <div className="footer-container">
-          <p className="footer-text">&copy; 2024 Денсаулық Күнделігі. Барлық құқықтар қорғалған.</p>
+          <p className="footer-text">&copy; 2025 Денсаулық Күнделігі. Барлық құқықтар қорғалған.</p>
           <div className="footer-links">
   <span className="footer-link" onClick={() => setIsModalOpen(true)}>
     Байланыс
