@@ -10,58 +10,70 @@ function WaterTrackerPage() {
   const [dailyGoal, setDailyGoal] = useState(2000);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch water intake data
-  useEffect(() => {
-    const fetchWaterData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${API_URL}/water`, getAuthHeader());
-        setWaterIntake(response.data.total_intake);
-        setDailyGoal(response.data.daily_goal);
-        setHistory(response.data.history.map(entry => ({
-          date: new Date(entry.date).toLocaleString(),
-          amount: entry.amount
-        })));
-      } catch (error) {
-        console.error('Failed to fetch water data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchWaterData = async () => {
+    try {
+      setLoading(true);
+      const headers = getAuthHeader();
+      const response = await axios.get(`${API_URL}/water`, headers);
+      setWaterIntake(response.data.total_intake);
+      setDailyGoal(response.data.daily_goal);
+      setHistory(response.data.history.map(entry => ({
+        date: new Date(entry.date).toLocaleString(),
+        amount: entry.amount
+      })));
+      setError(null); // Clear any previous errors
+    } catch (error) {
+      console.error('Failed to fetch water data:', error);
+      setError('Деректерді жүктеу мүмкін болмады');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchWaterData();
   }, []);
 
   const addWater = async (amount) => {
     try {
+      // Ensure amount is a number
+      const numAmount = Number(amount);
+      if (isNaN(numAmount)) {
+        throw new Error('Invalid amount');
+      }
+      
+      const headers = getAuthHeader();
       const response = await axios.post(
-        `${API_URL}/water/add`, 
-        { amount }, 
-        getAuthHeader()
+        `${API_URL}/water/add`,
+        { amount: numAmount },
+        headers
       );
       
-      // Update state with new data
+      // Update the water intake value from the response
       setWaterIntake(response.data.total_intake);
       
-      // Refresh water data to get updated history
-      const waterData = await axios.get(`${API_URL}/water`, getAuthHeader());
-      setHistory(waterData.data.history.map(entry => ({
-        date: new Date(entry.date).toLocaleString(),
-        amount: entry.amount
-      })));
+      // Refresh the data to update the history
+      fetchWaterData();
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error('Failed to add water:', error);
+      setError('Су қосу мүмкін болмады');
     }
   };
 
   const resetDaily = async () => {
     try {
-      await axios.post(`${API_URL}/water/reset`, {}, getAuthHeader());
+      const headers = getAuthHeader();
+      await axios.post(`${API_URL}/water/reset`, {}, headers);
       setWaterIntake(0);
-      setHistory([]);
+      fetchWaterData(); // Refresh data after reset
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error('Failed to reset water data:', error);
+      setError('Деректерді қалпына келтіру мүмкін болмады');
     }
   };
 
@@ -76,6 +88,9 @@ function WaterTrackerPage() {
   return (
     <div className="water-tracker">
       <h1>Су ішу трекері</h1>
+      
+      {error && <div className="error-message">{error}</div>}
+      
       <div className="water-goal">
         <h2>Күндізгі мақсат: {dailyGoal} мл</h2>
         <div className="progress-bar">

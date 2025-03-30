@@ -27,30 +27,30 @@ with app.app_context():
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
-    
+
     # Check if user exists
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'message': 'Email already registered'}), 409
-    
+
     if User.query.filter_by(username=data['username']).first():
         return jsonify({'message': 'Username already taken'}), 409
-    
+
     # Create new user
     new_user = User(
         username=data['username'],
         email=data['email'],
         password=generate_password_hash(data['password'])
     )
-    
+
     db.session.add(new_user)
     db.session.commit()
-    
+
     # Initialize default records for the user
     initialize_user_records(new_user.id)
-    
+
     # Create access token
     access_token = create_access_token(identity=new_user.id)
-    
+
     return jsonify({
         'message': 'User registered successfully',
         'access_token': access_token,

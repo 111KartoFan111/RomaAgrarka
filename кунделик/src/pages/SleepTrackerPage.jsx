@@ -1,58 +1,87 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import '../styles/SleepTrackerPage.css'
+import { getAuthHeader } from '../api/auth'
+
+const API_URL = 'http://127.0.0.1:5000/api'
 
 function SleepTrackerPage() {
   const [sleepStart, setSleepStart] = useState(null)
-  const [sleepEnd, setSleepEnd] = useState(null)
   const [sleepHistory, setSleepHistory] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const savedHistory = JSON.parse(localStorage.getItem('sleepHistory')) || []
-    setSleepHistory(savedHistory)
+    fetchSleepData()
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem('sleepHistory', JSON.stringify(sleepHistory))
-  }, [sleepHistory])
-
-  const startSleep = () => {
-    setSleepStart(new Date())
-  }
-
-  const endSleep = () => {
-    if (sleepStart) {
-      const end = new Date()
-      const duration = calculateSleepDuration(sleepStart, end)
-
-      const newEntry = {
-        start: sleepStart,
-        end: end,
-        duration: duration
+  const fetchSleepData = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get(`${API_URL}/sleep`, getAuthHeader())
+      
+      // Set sleep history from API
+      setSleepHistory(response.data.history || [])
+      
+      // Check if there's an active sleep session
+      if (response.data.current_sleep) {
+        setSleepStart(new Date(response.data.current_sleep))
       }
-
-      setSleepHistory([...sleepHistory, newEntry])
-      setSleepStart(null)
-      setSleepEnd(end)
+    } catch (error) {
+      console.error('Failed to fetch sleep data:', error)
+      setError('Деректерді жүктеу мүмкін болмады')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const calculateSleepDuration = (start, end) => {
-    const diff = end - start;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    return `${hours} сағ ${minutes} мин ${seconds} сек`;
-  };
-  
+  const startSleep = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/sleep/start`, {}, getAuthHeader())
+      setSleepStart(new Date(response.data.start_time))
+    } catch (error) {
+      console.error('Failed to start sleep tracking:', error)
+      setError('Ұйқыны бастау мүмкін болмады')
+    }
+  }
 
-  const resetSleep = () => {
-    setSleepHistory([])
+  const endSleep = async () => {
+    if (sleepStart) {
+      try {
+        const response = await axios.post(`${API_URL}/sleep/end`, {}, getAuthHeader())
+        
+        // Refresh sleep data to get updated history
+        fetchSleepData()
+        
+        // Clear current sleep session
+        setSleepStart(null)
+      } catch (error) {
+        console.error('Failed to end sleep tracking:', error)
+        setError('Ұйқыны аяқтау мүмкін болмады')
+      }
+    }
+  }
+
+  const resetSleep = async () => {
+    try {
+      await axios.post(`${API_URL}/sleep/reset`, {}, getAuthHeader())
+      setSleepHistory([])
+      setSleepStart(null)
+    } catch (error) {
+      console.error('Failed to reset sleep data:', error)
+      setError('Деректерді қалпына келтіру мүмкін болмады')
+    }
+  }
+
+  if (loading) {
+    return <div className="loading">Жүктелуде...</div>
   }
 
   return (
     <div className="sleep-tracker">
       <h1>Ұйқы трекері</h1>
+
+      {error && <div className="error-message">{error}</div>}
 
       <div className="sleep-controls">
         {!sleepStart ? (
